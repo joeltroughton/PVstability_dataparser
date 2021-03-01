@@ -31,25 +31,24 @@ namespace dataparser
         static void Main(string[] args)
         {
 
+            // Directory to scan for data. .dat files should be in folders corresponding to 
+            // the pixel under test. Maximum of 53 pixels available
             string searchdir = @"C:\temp\parse1\";
+
 
             for (int i = 0; i < 54; i++)
             {
+                // Go through each pixel directory
                 string filedir = String.Format(searchdir + i);
                 Console.WriteLine(filedir);
 
+                // Load all .dat files paths into an array
                 string[] files = Directory.GetFiles(filedir, "*.dat", System.IO.SearchOption.TopDirectoryOnly);
+
+                // Use regex to order data files in numeric order. Without this, file 10.dat comes before 2.dat
                 NumericalSort(files);
 
-                //foreach (string filename in files)
-                //{
-                //    Console.WriteLine(filename);
-                //}
-
-
                 Report report1 = new Report();
-
-
 
                 foreach (string datafile in files)
                 {
@@ -58,12 +57,14 @@ namespace dataparser
 
                     string[] lines = File.ReadAllLines(datafile, Encoding.UTF8);
 
-
+                    // Pick parameters from given lines in the .dat file
                     string jscLine = lines[15];
                     string vocLine = lines[16];
                     string ffLines = lines[18];
                     string pceLine = lines[17];
 
+                    // Split parameter header from value. For example:
+                    // Jsc (mA/cm2)	-1.35359E+1
                     string[] jscSplit = jscLine.Split('\t');
                     string[] vocSplit = vocLine.Split('\t');
                     string[] ffSplit = ffLines.Split('\t');
@@ -77,6 +78,7 @@ namespace dataparser
 
 
                     string outfilename = filename.Substring(filename.LastIndexOf("_") + 1); // Remove the path directory
+                    // Nasty hack to remove the ".dat" from the filename
                     outfilename = outfilename.Remove(outfilename.Length - 1, 1);
                     outfilename = outfilename.Remove(outfilename.Length - 1, 1);
                     outfilename = outfilename.Remove(outfilename.Length - 1, 1);
